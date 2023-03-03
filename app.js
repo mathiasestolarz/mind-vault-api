@@ -1,16 +1,17 @@
 const express = require('express');
+var cors = require('cors');
 require('dotenv').config();
 const notesRouter = require('./routes/notes');
-const { headers, notFoundMsg } = require('./config/config');
+const { resourceNotFoundMsg } = require('./config/config');
 
 const app = express();
 const port = 5000;
 
+app.use(cors());
 app.use(express.json());
 app.use('/', notesRouter);
 app.use(function(req, res, next) {
-	res.writeHead(404, headers);
-	res.end(JSON.stringify(notFoundMsg));
+	res.status(404).json(resourceNotFoundMsg);
 });
 
 app.listen(port, () => {
