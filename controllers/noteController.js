@@ -1,5 +1,5 @@
 const Note = require('../models/noteModel');
-const { headers, notFoundMsg } = require('../config/config');
+const { noteNotFoundMsg } = require('../config/config');
 
 
 // @desc    Gets all notes
@@ -8,8 +8,7 @@ async function getNotes(res) {
 	try {
 		const notes = await Note.findAll();
 
-		res.writeHead(200, headers);
-		res.end(JSON.stringify(notes.rows));
+		res.json(notes.rows);
 	} catch (error) {
 		console.log(error);
 	}
@@ -22,11 +21,9 @@ async function getNote(res, id) {
 		const note = await Note.findById(id);
 
 		if (!note) {
-			res.writeHead(404, headers);
-			res.end(JSON.stringify(notFoundMsg));
+			res.status(404).json(noteNotFoundMsg);
 		} else {
-			res.writeHead(200, headers);
-			res.end(JSON.stringify(note.rows[0]));
+			res.json(note.rows[0]);
 		}
 	} catch (error) {
 		console.log(error);
@@ -46,8 +43,7 @@ async function createNote(req, res) {
 
 		const newNote = await Note.create(note);
 
-		res.writeHead(201, headers);
-		res.end(JSON.stringify(newNote));
+		res.status(201).json(newNote);
 	} catch (error) {
 		console.log(error);
 	}
@@ -60,8 +56,7 @@ async function updateNote(req, res, id) {
 		const note = (await Note.findById(id)).rows[0];
 
 		if (!note) {
-			res.writeHead(404, headers);
-			res.end(JSON.stringify(notFoundMsg));
+			res.status(404).json(noteNotFoundMsg);
 		} else {
 			const { title, content } = req.body;
 
@@ -72,9 +67,7 @@ async function updateNote(req, res, id) {
 
 			const updatedNote = await Note.update(id, noteData);
 
-			res.writeHead(200, headers);
-
-			res.end(JSON.stringify(updatedNote));
+			res.json(updatedNote);
 		}
 	} catch (error) {
 		console.log(error);
@@ -88,14 +81,11 @@ async function deleteNote(res, id) {
 		const note = await Note.findById(id);
 
 		if (!note.rowCount) {
-			res.writeHead(404, headers);
-			res.end(JSON.stringify(notFoundMsg));
+			res.status(404).json(noteNotFoundMsg);
 		} else {
 			const deletedNote = await Note.remove(id);
 
-			res.writeHead(200, headers);
-
-			res.end(JSON.stringify(deletedNote));
+			res.json(deletedNote);
 		}
 	} catch (error) {
 		console.log(error);
